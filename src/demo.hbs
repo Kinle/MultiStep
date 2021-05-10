@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{htmlWebpackPlugin.options.title}}</title>
+</head>
+
+<body>
+    <div id="demo-model">
+
+    </div>
+</body>
+<script>
+    var multiStep;
+    window.onload = function () {
+        multiStep = MultiStep(document.body, { onComplete: () => alert('Callback for finished event') });
+        var step1 = multiStep.addStep();
+        var step2 = multiStep.addStep();
+        var step3 = multiStep.addStep();
+        step1.setContent(`Hello World!`);
+        step2.setContent(`This is Multi Step Javascript plugin`);
+        step3.setContent(`
+        <p>You can include HTML Content also</p>
+        <form onsubmit='javascript:event.preventDefault();submitSample(this);'>
+            Enter your name and click enter
+            <input autocomplete='off' name='name'>
+        </form>`);
+        
+
+
+    }
+    function submitSample(form){
+        alert(`Your name is ${form.name.value}`)
+        return false;
+    }
+</script>
+
+</html>

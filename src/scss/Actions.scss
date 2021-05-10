@@ -1,0 +1,35 @@
+.ms-action-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ms-button {
+    background-color: #20b2aa;
+    text-align: center;
+    padding: 15px 30px;
+    border: none;
+    color: white;
+    display: inline-block;
+    text-decoration: none;
+    text-transform: uppercase;
+    margin: 5px;
+    cursor: pointer;
+    background-position: center;
+    transition: background 0.8s;
+    user-select: none;
+
+    &:not(:disabled):hover{
+        background: #20b2aa radial-gradient(circle, transparent 1%, #20b2aa 1%) center/15000%;
+    }
+    &:not(:disabled):active {
+        background-color: #29d1c9;
+        background-size: 100%;
+        transition: background 0s;
+    }
+
+    &:disabled{
+        cursor: not-allowed ;
+        background-color: grey ;
+        transition: none;
+    }
+}

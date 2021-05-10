@@ -1,0 +1,103 @@
+@import './variables';
+
+.ms-progress-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.ms-progress {
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        border-width: $step-progress-border-size;
+        border-style: solid;
+        left: 50%;
+        max-width: 100%;
+    }
+
+    &:last-child::before,
+    &:last-child::after{
+        max-width: 0%;
+    }
+
+    &::before {
+        border-color: $step-progress-default;
+        top: (($step-indicator-gap-size + $step-status-size + $step-indicator-border-size)/2);
+        z-index: -2;
+        width: 100%;
+    }
+
+    &::after {
+        border-color: $step-progress-completed;
+        top: (($step-indicator-gap-size + $step-status-size + $step-indicator-border-size)/2);
+        z-index: -2;
+        width: 0%;
+        transition: width $step-animation-time linear;
+    }
+
+    &.current, &.completed{
+        & .ms-progress-step-indicator{
+            border-color: $step-progress-completed;
+        }
+    }
+    &.current{
+        & .ms-progress-step-indicator{
+            transition: border-color 0s linear;
+            transition-delay: $step-animation-time;
+        }
+    }
+    &.completed{
+        & .ms-progress-step-status{
+            background-color: $step-progress-completed;
+        }
+    }
+
+    &.skipped{
+        & .ms-progress-step-indicator, & .ms-progress-step-status{
+            border-color: $step-progress-skipped;
+        }
+    }
+
+    &.completed, &.skipped{
+        &::after{
+            width: 100%;
+        }
+    }
+}
+
+.ms-progress-step {
+    position: relative;
+    background: white;
+    border-radius: 100%;
+}
+
+.ms-progress-step-status {
+    height: $step-status-size;
+    width: $step-status-size;
+    border-radius: 100%;
+    background-color: $step-progress-default;
+    position: absolute;
+    left: $step-indicator-gap-size;
+    top: $step-indicator-gap-size;
+}
+
+.ms-progress-step-indicator {
+    border-radius: 100%;
+    height: $step-indicator-gap-size + $step-status-size;
+    width: $step-indicator-gap-size + $step-status-size;
+    border: $step-indicator-border-size solid $step-progress-default;
+}
+
+.ms-progress-label {
+    padding: 5px 15px;
+}
