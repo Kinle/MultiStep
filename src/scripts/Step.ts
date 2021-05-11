@@ -4,7 +4,9 @@ import '../scss/Step';
 export interface Step {
     markCompleted(isCompleted: boolean): void;
     markCurrent(): void;
-    setContent(content: HTMLElement): void
+    setContent(content: HTMLElement): void;
+    getStepNumber(): number;
+    
 }
 
 export class DefaultStep implements Step {
@@ -21,6 +23,10 @@ export class DefaultStep implements Step {
         this.stepElement = this.createStepElement();
         this.progressElement = this.createProgressElement();
         this.stepContentElement = this.createStepContentElement();
+    }
+    
+    getStepNumber() {
+        return this.index + 1;
     }
     
 

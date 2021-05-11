@@ -39,12 +39,6 @@ __webpack_require__.d(__webpack_exports__, {
   "default": function() { return /* binding */ scripts_MultiStep; }
 });
 
-;// CONCATENATED MODULE: ./src/scripts/Utils.ts
-function uuidv4() {
-  return (1e7.toString() + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
-    return (Number(c) ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> Number(c) / 4).toString(16);
-  });
-}
 ;// CONCATENATED MODULE: ./src/scripts/Step.ts
 
 
@@ -134,23 +128,48 @@ function () {
 
 
 
-
 var MULTISTEP_CLASS = {
   mainContainer: 'ms-container',
   progressContainer: 'ms-progress-container',
   stepContainer: 'ms-step-container',
-  actionContainer: 'ms-action-container'
+  actionContainer: 'ms-action-container',
+  stepButton: 'ms-button'
 };
-var DIV_ELEMENT = 'div';
+var IDS = {
+  prevButton: 'ms-prev-button',
+  nextButton: 'ms-next-button'
+};
+var ELEMENTS = {
+  DIV: 'div',
+  BUTTON: 'button'
+};
+var ATTRIBUTES = {
+  disabled: 'disabled'
+};
 var initialisationErrorMessage = 'Cannot initialise Multistep for already initialised element. Use MultiStep.get(element) to access MultiStep for already initialised element';
 var multiStepElementCache = new Map();
+
+function uuidv4() {
+  return (1e7.toString() + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+    return (Number(c) ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> Number(c) / 4).toString(16);
+  });
+}
+
+function setProperty(target, source, key) {
+  target[key] = source[key];
+}
 
 var MultiStepManager =
 /** @class */
 function () {
   function MultiStepManager(target, options) {
     this.defaultOptions = {
-      onComplete: function onComplete() {}
+      onComplete: function onComplete() {},
+      onNext: function onNext() {},
+      onPrev: function onPrev() {},
+      nextLabel: 'Next',
+      prevLabel: 'Previous',
+      completeLabel: 'Finish'
     };
     this.steps = [];
     this.currentStepIndex = 0;
@@ -162,6 +181,14 @@ function () {
 
   MultiStepManager.prototype.updateOptions = function (newOptions) {
     this.extendDefaults(newOptions);
+    this.updateLabels();
+  };
+
+  MultiStepManager.prototype.updateLabels = function () {
+    var nextButton = document.getElementById(IDS.nextButton);
+    if (nextButton) nextButton.innerText = this.defaultOptions.nextLabel;
+    var previousButton = document.getElementById(IDS.prevButton);
+    if (previousButton) previousButton.innerText = this.defaultOptions.prevLabel;
   };
 
   MultiStepManager.prototype.addStep = function () {
@@ -195,24 +222,24 @@ function () {
   };
 
   MultiStepManager.prototype.setActionButtonAttributes = function (step) {
-    var nextButton = document.getElementById('ms-next-button');
-    var previousButton = document.getElementById('ms-prev-button');
+    var nextButton = document.getElementById(IDS.nextButton);
+    var previousButton = document.getElementById(IDS.prevButton);
 
     if (nextButton) {
-      nextButton.removeAttribute('disabled');
+      nextButton.removeAttribute(ATTRIBUTES.disabled);
 
       if (step == this.steps.length - 1) {
-        nextButton.innerText = 'Finish';
+        nextButton.innerText = this.defaultOptions.completeLabel;
         nextButton.onclick = this.completed.bind(this);
       } else {
-        nextButton.innerText = 'Next';
+        nextButton.innerText = this.defaultOptions.nextLabel;
         nextButton.onclick = this.goToNext.bind(this);
       }
     }
 
     if (previousButton) {
-      previousButton.removeAttribute('disabled');
-      if (step == 0) previousButton.setAttribute('disabled', 'disabled');
+      previousButton.removeAttribute(ATTRIBUTES.disabled);
+      if (step == 0) previousButton.setAttribute(ATTRIBUTES.disabled, ATTRIBUTES.disabled);
     }
   };
 
@@ -220,8 +247,8 @@ function () {
     var _a, _b;
 
     this.steps[this.steps.length - 1].markCompleted(true);
-    (_a = document.getElementById('ms-next-button')) === null || _a === void 0 ? void 0 : _a.setAttribute('disabled', 'disabled');
-    (_b = document.getElementById('ms-prev-button')) === null || _b === void 0 ? void 0 : _b.setAttribute('disabled', 'disabled');
+    (_a = document.getElementById(IDS.nextButton)) === null || _a === void 0 ? void 0 : _a.setAttribute(ATTRIBUTES.disabled, ATTRIBUTES.disabled);
+    (_b = document.getElementById(IDS.prevButton)) === null || _b === void 0 ? void 0 : _b.setAttribute(ATTRIBUTES.disabled, ATTRIBUTES.disabled);
     this.defaultOptions.onComplete();
   };
 
@@ -261,9 +288,9 @@ function () {
   };
 
   MultiStepManager.prototype.extendDefaults = function (newOptions) {
-    for (var option in this.defaultOptions) {
-      if (newOptions.hasOwnProperty(option)) {
-        this.defaultOptions[option] = newOptions[option];
+    for (var optionKey in this.defaultOptions) {
+      if (newOptions.hasOwnProperty(optionKey)) {
+        setProperty(this.defaultOptions, newOptions, optionKey);
       }
     }
 
@@ -281,28 +308,28 @@ function () {
   };
 
   MultiStepManager.prototype.createMainContainer = function () {
-    var mainContainer = document.createElement(DIV_ELEMENT);
+    var mainContainer = document.createElement(ELEMENTS.DIV);
     mainContainer.classList.add(MULTISTEP_CLASS.mainContainer);
     this.target.append(mainContainer);
     return mainContainer;
   };
 
   MultiStepManager.prototype.createProgressContainer = function (mainContainer) {
-    var progressContainer = document.createElement(DIV_ELEMENT);
+    var progressContainer = document.createElement(ELEMENTS.DIV);
     progressContainer.classList.add(MULTISTEP_CLASS.progressContainer);
     mainContainer.append(progressContainer);
     return progressContainer;
   };
 
   MultiStepManager.prototype.createStepContainer = function (mainContainer) {
-    var stepContainer = document.createElement(DIV_ELEMENT);
+    var stepContainer = document.createElement(ELEMENTS.DIV);
     stepContainer.classList.add(MULTISTEP_CLASS.stepContainer);
     mainContainer.append(stepContainer);
     return stepContainer;
   };
 
   MultiStepManager.prototype.createActionContainer = function (mainContainer) {
-    var actionContainer = document.createElement(DIV_ELEMENT);
+    var actionContainer = document.createElement(ELEMENTS.DIV);
     actionContainer.classList.add(MULTISTEP_CLASS.actionContainer);
     this.createPreviousAction(actionContainer);
     this.createNextAction(actionContainer);
@@ -311,29 +338,31 @@ function () {
   };
 
   MultiStepManager.prototype.createPreviousAction = function (actionContainer) {
-    var previous = document.createElement('button');
-    previous.classList.add('ms-button');
-    previous.id = 'ms-prev-button';
-    previous.innerText = 'Previous';
+    var previous = document.createElement(ELEMENTS.BUTTON);
+    previous.classList.add(MULTISTEP_CLASS.stepButton);
+    previous.id = IDS.prevButton;
+    previous.innerText = this.defaultOptions.prevLabel;
     previous.onclick = this.goToPrevious.bind(this);
     actionContainer.append(previous);
   };
 
   MultiStepManager.prototype.createNextAction = function (actionContainer) {
-    var next = document.createElement('button');
-    next.classList.add('ms-button');
-    next.id = 'ms-next-button';
-    next.innerText = 'Next';
+    var next = document.createElement(ELEMENTS.BUTTON);
+    next.classList.add(MULTISTEP_CLASS.stepButton);
+    next.id = IDS.nextButton;
+    next.innerText = this.defaultOptions.nextLabel;
     next.onclick = this.goToNext.bind(this);
     actionContainer.append(next);
   };
 
   MultiStepManager.prototype.goToNext = function () {
     this.goToStep(this.currentStepIndex + 1);
+    this.defaultOptions.onNext(this.steps[this.currentStepIndex]);
   };
 
   MultiStepManager.prototype.goToPrevious = function () {
     this.goToStep(this.currentStepIndex - 1);
+    this.defaultOptions.onPrev(this.steps[this.currentStepIndex]);
   };
 
   MultiStepManager.prototype.scrollElement = function (stepIndex) {

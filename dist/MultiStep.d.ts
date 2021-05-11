@@ -4,6 +4,11 @@ import '../scss/StepContent';
 import '../scss/Actions';
 declare type MultiStepOptions = {
     onComplete: () => void;
+    onNext: (step: Step) => void;
+    onPrev: (step: Step) => void;
+    nextLabel: string;
+    prevLabel: string;
+    completeLabel: string;
 };
 export interface Containers {
     mainContainer: HTMLElement;
