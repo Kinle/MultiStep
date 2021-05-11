@@ -26,7 +26,7 @@
     }
 
     &:last-child::before,
-    &:last-child::after{
+    &:last-child::after {
         max-width: 0%;
     }
 
@@ -45,31 +45,34 @@
         transition: width $step-animation-time linear;
     }
 
-    &.current, &.completed{
-        & .ms-progress-step-indicator{
+    &.current,
+    &.completed {
+        & .ms-progress-step-indicator {
             border-color: $step-progress-completed;
         }
     }
-    &.current{
-        & .ms-progress-step-indicator{
+    &.current {
+        & .ms-progress-step-indicator {
             transition: border-color 0s linear;
             transition-delay: $step-animation-time;
         }
     }
-    &.completed{
-        & .ms-progress-step-status{
+    &.completed {
+        & .ms-progress-step-status {
             background-color: $step-progress-completed;
         }
     }
 
-    &.skipped{
-        & .ms-progress-step-indicator, & .ms-progress-step-status{
+    &.skipped {
+        & .ms-progress-step-indicator,
+        & .ms-progress-step-status {
             border-color: $step-progress-skipped;
         }
     }
 
-    &.completed, &.skipped{
-        &::after{
+    &.completed,
+    &.skipped {
+        &::after {
             width: 100%;
         }
     }

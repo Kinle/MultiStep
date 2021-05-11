@@ -18,7 +18,7 @@
     transition: background 0.8s;
     user-select: none;
 
-    &:not(:disabled):hover{
+    &:not(:disabled):hover {
         background: #20b2aa radial-gradient(circle, transparent 1%, #20b2aa 1%) center/15000%;
     }
     &:not(:disabled):active {
@@ -27,9 +27,9 @@
         transition: background 0s;
     }
 
-    &:disabled{
-        cursor: not-allowed ;
-        background-color: grey ;
+    &:disabled {
+        cursor: not-allowed;
+        background-color: grey;
         transition: none;
     }
 }

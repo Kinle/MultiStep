@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn lint && yarn build:prod && git add -A .
+yarn codestyle && yarn build:prod && git add -A .
