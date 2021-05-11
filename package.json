@@ -1,9 +1,9 @@
 {
   "name": "multistep.js",
   "dist-tags": {
-    "latest": "0.0.2"
+    "latest": "0.0.7"
   },
-  "version": "0.0.3",
+  "version": "0.0.7",
   "description": "MultiStep is a wizard style plugin with series of customizable steps",
   "main": "dist/multistep.js",
   "keywords": [

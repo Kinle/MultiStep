@@ -8,7 +8,7 @@ MultiStep is a multi-step wizard plugin
 `yarn add multistep.js`
 
 ## Using unpkg
-https://unpkg.com/multistep.js@latest/MultiStep.min.js
+https://unpkg.com/multistep.js@latest/dist/multistep.min.js
 
 
 # Usage
