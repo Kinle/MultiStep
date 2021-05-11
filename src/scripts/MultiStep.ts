@@ -1,4 +1,3 @@
-import { uuidv4 } from './Utils';
 import { Step, DefaultStep } from './Step';
 import '../scss/MultiStep';
 import '../scss/StepContent';
@@ -9,14 +8,32 @@ const MULTISTEP_CLASS = {
 	mainContainer: 'ms-container',
 	progressContainer: 'ms-progress-container',
 	stepContainer: 'ms-step-container',
-	actionContainer: 'ms-action-container'
+	actionContainer: 'ms-action-container',
+	stepButton: 'ms-button'
 }
 
-const DIV_ELEMENT = 'div';
+const IDS = {
+	prevButton: 'ms-prev-button',
+	nextButton: 'ms-next-button'
+}
+
+const ELEMENTS = {
+	DIV: 'div',
+	BUTTON: 'button'
+}
+
+const ATTRIBUTES = {
+	disabled: 'disabled'
+}
 const initialisationErrorMessage = 'Cannot initialise Multistep for already initialised element. Use MultiStep.get(element) to access MultiStep for already initialised element';
 
 type MultiStepOptions = {
 	onComplete: () => void;
+	onNext: (step: Step) => void;
+	onPrev: (step: Step) => void;
+	nextLabel: string;
+	prevLabel: string;
+	completeLabel: string;
 }
 export interface Containers {
 	mainContainer: HTMLElement,
@@ -34,11 +51,26 @@ interface IMultiStep {
 
 const multiStepElementCache = new Map<HTMLElement, IMultiStep>();
 
+function uuidv4() {
+	return (1e7.toString() + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c: string) =>
+		(Number(c) ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> Number(c) / 4).toString(16)
+	);
+}
+
+function setProperty<T, K extends keyof T>(target: T, source: T, key: K) {
+	target[key] = source[key];
+}
+
 class MultiStepManager implements IMultiStep {
 	target: HTMLElement;
 	containers: Containers;
 	defaultOptions: MultiStepOptions = {
-		onComplete: function(){}
+		onComplete: function () { },
+		onNext: function () { },
+		onPrev: function () { },
+		nextLabel: 'Next',
+		prevLabel: 'Previous',
+		completeLabel: 'Finish'
 	};
 
 	steps: Step[] = [];
@@ -53,6 +85,13 @@ class MultiStepManager implements IMultiStep {
 
 	updateOptions(newOptions: MultiStepOptions) {
 		this.extendDefaults(newOptions);
+		this.updateLabels();
+	}
+	updateLabels() {
+		const nextButton = document.getElementById(IDS.nextButton);
+		if (nextButton) nextButton.innerText = this.defaultOptions.nextLabel;
+		const previousButton = document.getElementById(IDS.prevButton);
+		if (previousButton) previousButton.innerText = this.defaultOptions.prevLabel;
 	}
 
 	addStep(): Step {
@@ -85,32 +124,32 @@ class MultiStepManager implements IMultiStep {
 		this.currentStepIndex = step;
 	}
 	private setActionButtonAttributes(step: number) {
-		const nextButton = document.getElementById('ms-next-button');
-		const previousButton = document.getElementById('ms-prev-button');
+		const nextButton = document.getElementById(IDS.nextButton);
+		const previousButton = document.getElementById(IDS.prevButton);
 		if (nextButton) {
-			nextButton.removeAttribute('disabled')
+			nextButton.removeAttribute(ATTRIBUTES.disabled)
 			if (step == this.steps.length - 1) {
-				nextButton.innerText = 'Finish';
+				nextButton.innerText = this.defaultOptions.completeLabel;
 				nextButton.onclick = this.completed.bind(this);
 
 			} else {
-				nextButton.innerText = 'Next';
+				nextButton.innerText = this.defaultOptions.nextLabel;
 				nextButton.onclick = this.goToNext.bind(this);
 			}
 
 		}
 
 		if (previousButton) {
-			previousButton.removeAttribute('disabled');
+			previousButton.removeAttribute(ATTRIBUTES.disabled);
 			if (step == 0)
-				previousButton.setAttribute('disabled', 'disabled');
+				previousButton.setAttribute(ATTRIBUTES.disabled, ATTRIBUTES.disabled);
 		}
 	}
 
 	private completed() {
 		this.steps[this.steps.length - 1].markCompleted(true);
-		document.getElementById('ms-next-button')?.setAttribute('disabled', 'disabled');
-		document.getElementById('ms-prev-button')?.setAttribute('disabled', 'disabled');
+		document.getElementById(IDS.nextButton)?.setAttribute(ATTRIBUTES.disabled, ATTRIBUTES.disabled);
+		document.getElementById(IDS.prevButton)?.setAttribute(ATTRIBUTES.disabled, ATTRIBUTES.disabled);
 		this.defaultOptions.onComplete();
 	}
 
@@ -147,9 +186,9 @@ class MultiStepManager implements IMultiStep {
 	}
 
 	private extendDefaults(newOptions: MultiStepOptions): MultiStepOptions {
-		for (const option in this.defaultOptions) {
-			if (newOptions.hasOwnProperty(option)) {
-				this.defaultOptions[option as keyof MultiStepOptions] = newOptions[option as keyof MultiStepOptions];
+		for (const optionKey in this.defaultOptions) {
+			if (newOptions.hasOwnProperty(optionKey)) {
+				setProperty(this.defaultOptions, newOptions, optionKey as keyof MultiStepOptions)
 			}
 		}
 		return newOptions;
@@ -165,28 +204,28 @@ class MultiStepManager implements IMultiStep {
 		}
 	}
 	private createMainContainer(): HTMLElement {
-		const mainContainer = document.createElement(DIV_ELEMENT);
+		const mainContainer = document.createElement(ELEMENTS.DIV);
 		mainContainer.classList.add(MULTISTEP_CLASS.mainContainer);
 		this.target.append(mainContainer);
 		return mainContainer;
 	}
 
 	private createProgressContainer(mainContainer: HTMLElement): HTMLElement {
-		const progressContainer = document.createElement(DIV_ELEMENT);
+		const progressContainer = document.createElement(ELEMENTS.DIV);
 		progressContainer.classList.add(MULTISTEP_CLASS.progressContainer);
 		mainContainer.append(progressContainer);
 		return progressContainer;
 	}
 
 	private createStepContainer(mainContainer: HTMLElement): HTMLElement {
-		const stepContainer = document.createElement(DIV_ELEMENT);
+		const stepContainer = document.createElement(ELEMENTS.DIV);
 		stepContainer.classList.add(MULTISTEP_CLASS.stepContainer);
 		mainContainer.append(stepContainer);
 		return stepContainer;
 	}
 
 	private createActionContainer(mainContainer: HTMLElement): HTMLElement {
-		const actionContainer = document.createElement(DIV_ELEMENT);
+		const actionContainer = document.createElement(ELEMENTS.DIV);
 		actionContainer.classList.add(MULTISTEP_CLASS.actionContainer);
 		this.createPreviousAction(actionContainer);
 		this.createNextAction(actionContainer);
@@ -196,29 +235,31 @@ class MultiStepManager implements IMultiStep {
 	}
 
 	private createPreviousAction(actionContainer: HTMLElement): void {
-		const previous = document.createElement('button');
-		previous.classList.add('ms-button');
-		previous.id = 'ms-prev-button';
-		previous.innerText = 'Previous';
+		const previous = document.createElement(ELEMENTS.BUTTON);
+		previous.classList.add(MULTISTEP_CLASS.stepButton);
+		previous.id = IDS.prevButton;
+		previous.innerText = this.defaultOptions.prevLabel;
 		previous.onclick = this.goToPrevious.bind(this);
 		actionContainer.append(previous);
 	}
 
 	private createNextAction(actionContainer: HTMLElement): void {
-		const next = document.createElement('button');
-		next.classList.add('ms-button');
-		next.id = 'ms-next-button';
-		next.innerText = 'Next';
+		const next = document.createElement(ELEMENTS.BUTTON);
+		next.classList.add(MULTISTEP_CLASS.stepButton);
+		next.id = IDS.nextButton;
+		next.innerText = this.defaultOptions.nextLabel;
 		next.onclick = this.goToNext.bind(this);
 		actionContainer.append(next);
 	}
 
 	private goToNext() {
 		this.goToStep(this.currentStepIndex + 1)
+		this.defaultOptions.onNext(this.steps[this.currentStepIndex])
 	}
 
 	private goToPrevious() {
 		this.goToStep(this.currentStepIndex - 1)
+		this.defaultOptions.onPrev(this.steps[this.currentStepIndex])
 	}
 
 	private scrollElement(stepIndex: number) {
