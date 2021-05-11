@@ -67,7 +67,6 @@ const commonConfig = {
 
 function getConfig() {
     const nodeEnv = process.env.NODE_ENV || 'development';
-    console.log(`Environment is ${nodeEnv}`);
     return require(`./webpack.${nodeEnv}.config.js`);
 }
 
