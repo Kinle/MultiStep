@@ -1,11 +1,19 @@
 {
   "name": "multistep.js",
   "dist-tags": {
-    "latest": "0.0.1"
+    "latest": "0.0.2"
   },
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "MultiStep is a wizard style plugin with series of customizable steps",
-  "main": "MultiStep.js",
+  "main": "dist/multistep.js",
+  "keywords": [
+    "multi",
+    "step",
+    "multi-step",
+    "multistep",
+    "wizard",
+    "plugin"
+  ],
   "files": [
     "dist/**"
   ],
@@ -42,6 +50,7 @@
     "@babel/preset-env": "^7.14.0",
     "@types/jest": "^26.0.23",
     "@types/node-sass": "^4.11.1",
+    "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
     "autoprefixer": "^10.2.5",
     "babel-jest": "^26.6.3",
@@ -76,8 +85,5 @@
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"
-  },
-  "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.23.0"
   }
 }
