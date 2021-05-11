@@ -1,6 +1,6 @@
 {
   "name": "multistep.js",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "MultiStep is a wizard style plugin with series of customizable steps",
   "main": "dist/multistep.js",
   "keywords": [
@@ -39,7 +39,8 @@
     "deploy": "yarn verify && yarn build-prod && firebase deploy",
     "analyze": "yarn analyze-profile && yarn analyze-bundle",
     "analyze-profile": "cross-env NODE_ENV=production webpack --profile --json > stats.json",
-    "analyze-bundle": "webpack-bundle-analyzer stats.json"
+    "analyze-bundle": "webpack-bundle-analyzer stats.json",
+    "prepublish": "yarn codestyle && yarn build:prod"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
