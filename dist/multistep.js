@@ -53,6 +53,10 @@ function () {
     this.stepContentElement = this.createStepContentElement();
   }
 
+  DefaultStep.prototype.getStepNumber = function () {
+    return this.index + 1;
+  };
+
   DefaultStep.prototype.setContent = function (content) {
     this.stepContentElement.innerHTML = '';
     if (content instanceof HTMLElement) this.stepContentElement.append(content);else this.stepContentElement.innerHTML = content;
@@ -164,9 +168,6 @@ var MultiStepManager =
 function () {
   function MultiStepManager(target, options) {
     this.defaultOptions = {
-      onComplete: function onComplete() {},
-      onNext: function onNext() {},
-      onPrev: function onPrev() {},
       nextLabel: 'Next',
       prevLabel: 'Previous',
       completeLabel: 'Finish'
@@ -249,7 +250,7 @@ function () {
     this.steps[this.steps.length - 1].markCompleted(true);
     (_a = document.getElementById(IDS.nextButton)) === null || _a === void 0 ? void 0 : _a.setAttribute(ATTRIBUTES.disabled, ATTRIBUTES.disabled);
     (_b = document.getElementById(IDS.prevButton)) === null || _b === void 0 ? void 0 : _b.setAttribute(ATTRIBUTES.disabled, ATTRIBUTES.disabled);
-    this.defaultOptions.onComplete();
+    if (this.defaultOptions.onComplete) this.defaultOptions.onComplete();
   };
 
   MultiStepManager.prototype.updateProgress = function (current, target) {
@@ -289,6 +290,7 @@ function () {
 
   MultiStepManager.prototype.extendDefaults = function (newOptions) {
     for (var optionKey in this.defaultOptions) {
+      /* eslint-disable no-prototype-builtins */
       if (newOptions.hasOwnProperty(optionKey)) {
         setProperty(this.defaultOptions, newOptions, optionKey);
       }
@@ -357,12 +359,12 @@ function () {
 
   MultiStepManager.prototype.goToNext = function () {
     this.goToStep(this.currentStepIndex + 1);
-    this.defaultOptions.onNext(this.steps[this.currentStepIndex]);
+    if (this.defaultOptions.onNext) this.defaultOptions.onNext(this.steps[this.currentStepIndex]);
   };
 
   MultiStepManager.prototype.goToPrevious = function () {
     this.goToStep(this.currentStepIndex - 1);
-    this.defaultOptions.onPrev(this.steps[this.currentStepIndex]);
+    if (this.defaultOptions.onPrev) this.defaultOptions.onPrev(this.steps[this.currentStepIndex]);
   };
 
   MultiStepManager.prototype.scrollElement = function (stepIndex) {

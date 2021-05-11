@@ -1,12 +1,12 @@
 import { Containers } from './MultiStep';
 import '../scss/Step';
 
+/* eslint-disable no-unused-vars */
 export interface Step {
     markCompleted(isCompleted: boolean): void;
     markCurrent(): void;
     setContent(content: HTMLElement): void;
     getStepNumber(): number;
-    
 }
 
 export class DefaultStep implements Step {
@@ -16,7 +16,6 @@ export class DefaultStep implements Step {
     stepContentElement: HTMLElement;
     index: number;
 
-
     constructor(containers: Containers, index: number) {
         this.containers = containers;
         this.index = index;
@@ -24,29 +23,24 @@ export class DefaultStep implements Step {
         this.progressElement = this.createProgressElement();
         this.stepContentElement = this.createStepContentElement();
     }
-    
-    getStepNumber() {
+
+    getStepNumber(): number {
         return this.index + 1;
     }
-    
 
     setContent(content: HTMLElement | string): void {
         this.stepContentElement.innerHTML = '';
-        if (content instanceof HTMLElement)
-            this.stepContentElement.append(content);
-        else
-            this.stepContentElement.innerHTML = content;
+        if (content instanceof HTMLElement) this.stepContentElement.append(content);
+        else this.stepContentElement.innerHTML = content;
     }
     markCompleted(isCompleted: boolean): void {
-        this.progressElement.classList.remove('current', 'skipped')
-        if (isCompleted)
-            this.progressElement.classList.add('completed')
-        else
-            this.progressElement.classList.remove('completed')
+        this.progressElement.classList.remove('current', 'skipped');
+        if (isCompleted) this.progressElement.classList.add('completed');
+        else this.progressElement.classList.remove('completed');
     }
     markCurrent(): void {
-        this.progressElement.classList.remove('completed', 'skipped')
-        this.progressElement.classList.add('current')
+        this.progressElement.classList.remove('completed', 'skipped');
+        this.progressElement.classList.add('current');
     }
 
     private createStepElement() {
@@ -70,14 +64,12 @@ export class DefaultStep implements Step {
         return progressElement;
     }
 
-
     private createProgressStep(): HTMLElement {
         const statusElement = this.createElement('ms-progress-step');
         statusElement.append(this.createProgressStepStatus());
         statusElement.append(this.createProgressStepIndicator());
         return statusElement;
     }
-
 
     private createProgressStepStatus(): HTMLElement {
         const statusElement = this.createElement('ms-progress-step-status');

@@ -39,6 +39,9 @@ Reset step progress
 ## Step.setContent:
 Sets HTML content for a step object
 
+## Step.getStepNumber:
+Gets step number. Step number starts from 1.
+
 
 # Options
 ## onComplete():

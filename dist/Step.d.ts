@@ -4,6 +4,7 @@ export interface Step {
     markCompleted(isCompleted: boolean): void;
     markCurrent(): void;
     setContent(content: HTMLElement): void;
+    getStepNumber(): number;
 }
 export declare class DefaultStep implements Step {
     containers: Containers;
@@ -12,6 +13,7 @@ export declare class DefaultStep implements Step {
     stepContentElement: HTMLElement;
     index: number;
     constructor(containers: Containers, index: number);
+    getStepNumber(): number;
     setContent(content: HTMLElement | string): void;
     markCompleted(isCompleted: boolean): void;
     markCurrent(): void;
